@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Playfair_Display, DM_Sans } from "next/font/google";
 import { ToastProvider } from "@/components/Toast";
+import Nav from "@/components/Nav";
+import Footer from "@/components/Footer";
 import "./globals.css";
 
 const playfairDisplay = Playfair_Display({
@@ -29,7 +31,11 @@ export default function RootLayout({
       className={`${playfairDisplay.variable} ${dmSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <ToastProvider>{children}</ToastProvider>
+        <ToastProvider>
+          <Nav />
+          {children}
+          <Footer />
+        </ToastProvider>
       </body>
     </html>
   );
