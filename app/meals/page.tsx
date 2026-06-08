@@ -1,16 +1,10 @@
-"use client"
-
+import Link from "next/link"
 import FadeIn from "@/components/FadeIn"
 import MealCard from "@/components/MealCard"
-import { useToast } from "@/components/Toast"
-import { meals } from "@/lib/data"
+import { listMeals } from "@/lib/meals/queries"
 
-export default function MealsPage() {
-  const { showToast } = useToast()
-
-  function handleCreateMeal() {
-    showToast("Coming soon, check back soon!")
-  }
+export default async function MealsPage() {
+  const meals = await listMeals()
 
   return (
     <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-16">
@@ -26,23 +20,28 @@ export default function MealsPage() {
               the people coming over.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={handleCreateMeal}
+          <Link
+            href="/meals/new"
             className="self-start rounded-full bg-terracotta px-6 py-3 font-sans text-sm font-medium text-cream transition-colors hover:bg-terracotta/90 sm:self-auto"
           >
             Create Meal
-          </button>
+          </Link>
         </div>
       </FadeIn>
 
-      <div className="mt-10 grid gap-6 sm:grid-cols-2">
-        {meals.map((meal, index) => (
-          <FadeIn key={meal.id} delay={index * 100}>
-            <MealCard meal={meal} />
-          </FadeIn>
-        ))}
-      </div>
+      {meals.length > 0 ? (
+        <div className="mt-10 grid gap-6 sm:grid-cols-2">
+          {meals.map((meal, index) => (
+            <FadeIn key={meal.id} delay={index * 100}>
+              <MealCard meal={meal} />
+            </FadeIn>
+          ))}
+        </div>
+      ) : (
+        <p className="mt-16 text-center font-sans text-sm text-muted">
+          No meals yet. Create one and start adding recipes to it.
+        </p>
+      )}
     </main>
   )
 }

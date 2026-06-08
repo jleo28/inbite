@@ -32,11 +32,6 @@ export interface Event {
   guests: Guest[]
 }
 
-export const currentUser = {
-  name: "Joe L.",
-  initials: "JL",
-}
-
 export const recipes: Recipe[] = [
   {
     id: "roasted-tomato-pasta",

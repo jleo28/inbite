@@ -1,6 +1,10 @@
+import Link from "next/link"
 import { notFound } from "next/navigation"
 import FadeIn from "@/components/FadeIn"
-import { recipes } from "@/lib/data"
+import { createClient } from "@/lib/supabase/server"
+import { getRecipeBySlug } from "@/lib/recipes/queries"
+import { listMealsOwnedBy } from "@/lib/meals/queries"
+import { deleteRecipe } from "@/lib/recipes/actions"
 import AddToMealButton from "./AddToMealButton"
 
 interface RecipeDetailPageProps {
@@ -9,11 +13,19 @@ interface RecipeDetailPageProps {
 
 export default async function RecipeDetailPage({ params }: RecipeDetailPageProps) {
   const { id } = await params
-  const recipe = recipes.find((item) => item.id === id)
+  const recipe = await getRecipeBySlug(id)
 
   if (!recipe) {
     notFound()
   }
+
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  const ownMeals = user ? await listMealsOwnedBy(user.id) : []
+  const isOwner = Boolean(user && recipe.ownerId === user.id)
 
   return (
     <main className="flex-1">
@@ -21,21 +33,48 @@ export default async function RecipeDetailPage({ params }: RecipeDetailPageProps
 
       <div className="mx-auto w-full max-w-3xl px-6 py-16">
         <FadeIn>
-          <div className="flex flex-wrap gap-2">
-            {recipe.tags.map((tag) => (
-              <span
-                key={tag}
-                className="rounded-full bg-stone/60 px-3 py-1 font-sans text-xs text-espresso"
-              >
-                {tag}
-              </span>
-            ))}
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="flex flex-wrap gap-2">
+              {recipe.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="rounded-full bg-stone/60 px-3 py-1 font-sans text-xs text-espresso"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+            {isOwner ? (
+              <div className="flex items-center gap-3">
+                <Link
+                  href={`/recipes/${recipe.id}/edit`}
+                  className="font-sans text-sm text-terracotta hover:underline"
+                >
+                  Edit
+                </Link>
+                <form action={deleteRecipe}>
+                  <input type="hidden" name="recipeId" value={recipe.dbId} />
+                  <button
+                    type="submit"
+                    className="font-sans text-sm text-muted transition-colors hover:text-terracotta"
+                  >
+                    Delete
+                  </button>
+                </form>
+              </div>
+            ) : null}
           </div>
           <h1 className="mt-4 font-display text-4xl text-espresso sm:text-5xl">{recipe.name}</h1>
           <p className="mt-4 max-w-xl font-sans text-base text-muted">{recipe.description}</p>
           <div className="mt-6 flex flex-wrap items-center gap-5">
             <p className="font-sans text-sm text-muted">Serves {recipe.servings}</p>
-            <AddToMealButton recipeName={recipe.name} />
+            <AddToMealButton
+              recipeId={recipe.dbId}
+              recipeSlug={recipe.id}
+              recipeName={recipe.name}
+              isSignedIn={Boolean(user)}
+              ownMeals={ownMeals}
+            />
           </div>
         </FadeIn>
 
