@@ -1,8 +1,13 @@
 import Link from "next/link"
-import type { Recipe } from "@/lib/data"
 
 interface RecipeCardProps {
-  recipe: Recipe
+  recipe: {
+    id: string
+    name: string
+    tags: string[]
+    servings: number
+    imageGradient: string
+  }
 }
 
 export default function RecipeCard({ recipe }: RecipeCardProps) {
