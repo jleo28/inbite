@@ -42,12 +42,13 @@ export default function Nav({ user }: { user: NavUser }) {
         <div className="flex items-center gap-3">
           {user ? (
             <>
-              <div
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-terracotta font-sans text-sm font-medium text-cream"
-                title={user.name}
+              <Link
+                href="/profile"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-terracotta font-sans text-sm font-medium text-cream transition-opacity hover:opacity-80"
+                title={`${user.name} — Profile`}
               >
                 {user.initials}
-              </div>
+              </Link>
               <form action={logout} className="hidden md:block">
                 <button
                   type="submit"
