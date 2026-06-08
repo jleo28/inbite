@@ -1,16 +1,12 @@
 "use client"
 
 import Link from "next/link"
+import { useActionState } from "react"
 import FadeIn from "@/components/FadeIn"
-import { useToast } from "@/components/Toast"
+import { login } from "@/lib/auth/actions"
 
 export default function LoginPage() {
-  const { showToast } = useToast()
-
-  function handleSignIn(event: React.MouseEvent<HTMLButtonElement>) {
-    event.preventDefault()
-    showToast("Coming soon, check back soon!")
-  }
+  const [state, formAction, pending] = useActionState(login, undefined)
 
   return (
     <main className="flex flex-1 items-center justify-center px-6 py-20">
@@ -23,7 +19,7 @@ export default function LoginPage() {
         </FadeIn>
 
         <FadeIn delay={100}>
-          <form className="mt-8 flex flex-col gap-5">
+          <form action={formAction} className="mt-8 flex flex-col gap-5">
             <label className="flex flex-col gap-2 font-sans text-sm text-espresso">
               Email
               <input
@@ -46,12 +42,16 @@ export default function LoginPage() {
               />
             </label>
 
+            {state && "error" in state ? (
+              <p className="font-sans text-sm text-terracotta">{state.error}</p>
+            ) : null}
+
             <button
-              type="button"
-              onClick={handleSignIn}
-              className="mt-2 rounded-full bg-terracotta px-6 py-3 font-sans text-sm font-medium text-cream transition-colors hover:bg-terracotta/90"
+              type="submit"
+              disabled={pending}
+              className="mt-2 rounded-full bg-terracotta px-6 py-3 font-sans text-sm font-medium text-cream transition-colors hover:bg-terracotta/90 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              Sign in
+              {pending ? "Signing in…" : "Sign in"}
             </button>
           </form>
         </FadeIn>
