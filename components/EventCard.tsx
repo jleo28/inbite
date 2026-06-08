@@ -1,8 +1,9 @@
 import Link from "next/link"
-import type { Event } from "@/lib/data"
+import type { Event } from "@/lib/events/queries"
 
 interface EventCardProps {
   event: Event
+  isHost: boolean
 }
 
 const statusLabels: Record<Event["status"], string> = {
@@ -15,7 +16,15 @@ const statusStyles: Record<Event["status"], string> = {
   "pending-rsvp": "bg-terracotta/15 text-terracotta",
 }
 
-export default function EventCard({ event }: EventCardProps) {
+function formatDate(iso: string) {
+  return new Date(iso + "T12:00:00").toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  })
+}
+
+export default function EventCard({ event, isHost }: EventCardProps) {
   return (
     <Link
       href={`/events/${event.id}`}
@@ -24,7 +33,8 @@ export default function EventCard({ event }: EventCardProps) {
       <div>
         <h3 className="font-display text-xl text-espresso">{event.name}</h3>
         <p className="mt-1 font-sans text-sm text-muted">
-          {event.date} &middot; Hosted by {event.host}
+          {formatDate(event.eventDate)} &middot; Hosted by {event.hostName}
+          {isHost ? <span className="ml-2 text-terracotta">(you)</span> : null}
         </p>
       </div>
       <span

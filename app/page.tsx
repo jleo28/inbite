@@ -3,14 +3,34 @@ import HeroSection from "@/components/HeroSection"
 import RecipeCard from "@/components/RecipeCard"
 import FadeIn from "@/components/FadeIn"
 import InvitationCard from "@/components/home/InvitationCard"
-import { events } from "@/lib/data"
+import { createClient } from "@/lib/supabase/server"
 import { listRecipes } from "@/lib/recipes/queries"
+import { listEvents } from "@/lib/events/queries"
 
 export default async function Home() {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
   const recipes = await listRecipes()
-  const invite = events[0]
   const featured = recipes.slice(0, 3)
   const recentlyAdded = recipes[recipes.length - 1]
+
+  let pendingInvite: { event: Awaited<ReturnType<typeof listEvents>>[number]; myGuest: NonNullable<Awaited<ReturnType<typeof listEvents>>[number]["guests"][number]> } | null =
+    null
+
+  if (user) {
+    const events = await listEvents()
+    for (const event of events) {
+      if (event.hostId === user.id) continue
+      const guest = event.guests.find((g) => g.userId === user.id && g.rsvp === "pending")
+      if (guest) {
+        pendingInvite = { event, myGuest: guest }
+        break
+      }
+    }
+  }
 
   return (
     <main className="flex flex-1 flex-col">
@@ -41,7 +61,38 @@ export default async function Home() {
       <section className="bg-stone/30 px-6 py-20">
         <div className="mx-auto max-w-6xl">
           <FadeIn>
-            <InvitationCard invite={invite} />
+            {pendingInvite ? (
+              <InvitationCard invite={pendingInvite.event} myGuest={pendingInvite.myGuest} />
+            ) : (
+              <div className="rounded-2xl border border-stone bg-cream p-8 sm:p-10">
+                <p className="font-sans text-sm uppercase tracking-[0.2em] text-terracotta">
+                  Gather your people
+                </p>
+                <h2 className="mt-3 font-display text-3xl text-espresso">
+                  Plan an event around your meals
+                </h2>
+                <p className="mt-2 font-sans text-sm text-muted">
+                  Create a get-together, link a meal, and invite your guests — all in one place.
+                </p>
+                <div className="mt-6">
+                  {user ? (
+                    <Link
+                      href="/events/new"
+                      className="rounded-full bg-terracotta px-6 py-3 font-sans text-sm font-medium text-cream transition-colors hover:bg-terracotta/90"
+                    >
+                      Create an event
+                    </Link>
+                  ) : (
+                    <Link
+                      href="/signup"
+                      className="rounded-full bg-terracotta px-6 py-3 font-sans text-sm font-medium text-cream transition-colors hover:bg-terracotta/90"
+                    >
+                      Sign up free
+                    </Link>
+                  )}
+                </div>
+              </div>
+            )}
           </FadeIn>
         </div>
       </section>
