@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { currentUser } from "@/lib/data"
+import { logout } from "@/lib/auth/actions"
 
 const links = [
   { href: "/", label: "Home" },
@@ -11,7 +11,12 @@ const links = [
   { href: "/events", label: "Events" },
 ]
 
-export default function Nav() {
+type NavUser = {
+  name: string
+  initials: string
+} | null
+
+export default function Nav({ user }: { user: NavUser }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   return (
@@ -35,12 +40,31 @@ export default function Nav() {
         </ul>
 
         <div className="flex items-center gap-3">
-          <div
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-terracotta font-sans text-sm font-medium text-cream"
-            title={currentUser.name}
-          >
-            {currentUser.initials}
-          </div>
+          {user ? (
+            <>
+              <div
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-terracotta font-sans text-sm font-medium text-cream"
+                title={user.name}
+              >
+                {user.initials}
+              </div>
+              <form action={logout} className="hidden md:block">
+                <button
+                  type="submit"
+                  className="font-sans text-sm text-muted transition-colors hover:text-terracotta"
+                >
+                  Log out
+                </button>
+              </form>
+            </>
+          ) : (
+            <Link
+              href="/login"
+              className="hidden rounded-full border border-stone px-4 py-2 font-sans text-sm text-espresso transition-colors hover:border-terracotta hover:text-terracotta md:block"
+            >
+              Sign in
+            </Link>
+          )}
 
           <button
             type="button"
@@ -81,6 +105,27 @@ export default function Nav() {
               </Link>
             </li>
           ))}
+          <li>
+            {user ? (
+              <form action={logout}>
+                <button
+                  type="submit"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="block w-full rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-stone/40 hover:text-terracotta"
+                >
+                  Log out
+                </button>
+              </form>
+            ) : (
+              <Link
+                href="/login"
+                onClick={() => setIsMenuOpen(false)}
+                className="block rounded-lg px-3 py-2.5 transition-colors hover:bg-stone/40 hover:text-terracotta"
+              >
+                Sign in
+              </Link>
+            )}
+          </li>
         </ul>
       ) : null}
     </header>
