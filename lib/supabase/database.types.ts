@@ -253,6 +253,7 @@ export type Database = {
     Functions: {
       is_event_host: { Args: { p_event_id: string }; Returns: boolean }
       is_event_participant: { Args: { p_event_id: string }; Returns: boolean }
+      lookup_user_id_by_email: { Args: { p_email: string }; Returns: string }
       respond_to_invite: {
         Args: { p_guest_id: string; p_rsvp: string }
         Returns: {
