@@ -41,6 +41,13 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
   const isHost = event.hostId === userId
   const myGuest = event.guests.find((g) => g.userId === userId) ?? null
 
+  const allergyTotals = new Map<string, number>()
+  for (const guest of event.guests) {
+    for (const allergy of guest.allergies) {
+      allergyTotals.set(allergy, (allergyTotals.get(allergy) ?? 0) + 1)
+    }
+  }
+
   return (
     <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-16">
       <FadeIn>
@@ -96,6 +103,22 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
           <div className="mt-6">
             <h3 className="mb-3 font-sans text-sm font-medium text-espresso">Invite someone</h3>
             <AddGuestForm eventId={event.dbId} eventSlug={event.id} />
+          </div>
+        ) : null}
+
+        {allergyTotals.size > 0 ? (
+          <div className="mt-8 rounded-2xl border border-stone bg-cream p-5">
+            <h3 className="font-sans text-sm font-medium text-espresso">Dietary needs</h3>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {Array.from(allergyTotals.entries()).map(([allergy, count]) => (
+                <span
+                  key={allergy}
+                  className="rounded-full border border-terracotta/30 bg-terracotta/10 px-3 py-1 font-sans text-xs capitalize text-terracotta"
+                >
+                  {allergy} &middot; {count}
+                </span>
+              ))}
+            </div>
           </div>
         ) : null}
       </FadeIn>
