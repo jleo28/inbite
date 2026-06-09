@@ -98,6 +98,7 @@ export async function addGuest(prevState: unknown, formData: FormData) {
   const eventSlug = formData.get("eventSlug") as string
   const name = (formData.get("guestName") as string).trim()
   const email = ((formData.get("guestEmail") as string) || "").trim().toLowerCase()
+  const allergies = formData.getAll("allergies") as string[]
 
   if (!name) return { error: "Guest name is required." }
 
@@ -113,7 +114,7 @@ export async function addGuest(prevState: unknown, formData: FormData) {
     name,
     user_id: userId,
     rsvp: "pending",
-    allergies: [],
+    allergies,
   })
 
   if (error) return { error: error.message }
