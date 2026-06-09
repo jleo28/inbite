@@ -13,6 +13,10 @@ export default async function EventsPage() {
   const events = await listEvents()
   const userId = user?.id ?? ""
 
+  const today = new Date().toISOString().split("T")[0]
+  const upcoming = events.filter((e) => e.eventDate >= today)
+  const past = events.filter((e) => e.eventDate < today).reverse()
+
   return (
     <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-16">
       <FadeIn>
@@ -36,24 +40,52 @@ export default async function EventsPage() {
         </div>
       </FadeIn>
 
-      <div className="mt-10 flex flex-col gap-6">
-        {events.length === 0 ? (
-          <FadeIn>
+      {events.length === 0 ? (
+        <FadeIn>
+          <div className="mt-10">
             <p className="rounded-2xl border border-stone bg-cream px-8 py-10 font-sans text-sm text-muted">
               You have no events yet.{" "}
               <Link href="/events/new" className="text-terracotta hover:underline">
                 Create your first event.
               </Link>
             </p>
-          </FadeIn>
-        ) : (
-          events.map((event, index) => (
-            <FadeIn key={event.id} delay={index * 100}>
-              <EventCard event={event} isHost={event.hostId === userId} />
+          </div>
+        </FadeIn>
+      ) : (
+        <>
+          <div className="mt-10 flex flex-col gap-6">
+            {upcoming.length === 0 ? (
+              <FadeIn>
+                <p className="rounded-2xl border border-stone bg-cream px-8 py-6 font-sans text-sm text-muted">
+                  No upcoming events.{" "}
+                  <Link href="/events/new" className="text-terracotta hover:underline">
+                    Plan one.
+                  </Link>
+                </p>
+              </FadeIn>
+            ) : (
+              upcoming.map((event, index) => (
+                <FadeIn key={event.id} delay={index * 100}>
+                  <EventCard event={event} isHost={event.hostId === userId} />
+                </FadeIn>
+              ))
+            )}
+          </div>
+
+          {past.length > 0 ? (
+            <FadeIn delay={200}>
+              <div className="mt-14">
+                <h2 className="font-display text-2xl text-espresso opacity-50">Past events</h2>
+                <div className="mt-5 flex flex-col gap-4 opacity-60">
+                  {past.map((event) => (
+                    <EventCard key={event.id} event={event} isHost={event.hostId === userId} />
+                  ))}
+                </div>
+              </div>
             </FadeIn>
-          ))
-        )}
-      </div>
+          ) : null}
+        </>
+      )}
     </main>
   )
 }
