@@ -1,3 +1,5 @@
+import CopyListButton from "./CopyListButton"
+
 interface Ingredient {
   amount: string
   item: string
@@ -22,10 +24,23 @@ export default function ShoppingListPreview({ mealName, mealRecipes }: ShoppingL
     }
   }
 
+  const copyText =
+    aggregated.size > 0
+      ? `Shopping list for ${mealName}\n\n` +
+        Array.from(aggregated.entries())
+          .map(([item, amounts]) => `${amounts.join(" + ")} ${item}`)
+          .join("\n")
+      : ""
+
   return (
     <div className="rounded-2xl border border-stone bg-cream p-6 sm:p-8">
-      <h3 className="font-display text-xl text-espresso">Shopping list</h3>
-      <p className="mt-1 font-sans text-sm text-muted">Combined ingredients for {mealName}</p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h3 className="font-display text-xl text-espresso">Shopping list</h3>
+          <p className="mt-1 font-sans text-sm text-muted">Combined ingredients for {mealName}</p>
+        </div>
+        {aggregated.size > 0 ? <CopyListButton text={copyText} /> : null}
+      </div>
       {aggregated.size > 0 ? (
         <ul className="mt-5 grid gap-2.5 font-sans text-sm text-espresso sm:grid-cols-2">
           {Array.from(aggregated.entries()).map(([item, amounts]) => (
