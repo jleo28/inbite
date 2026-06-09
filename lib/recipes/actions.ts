@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
+import { createAdminClient } from "@/lib/supabase/admin"
 import { RECIPE_GRADIENTS } from "./constants"
 
 export type RecipeFormState = { error: string } | undefined
@@ -125,10 +126,25 @@ export async function createRecipe(
       steps: parsed.steps,
       created_by: user.id,
     })
-    .select("slug")
+    .select("id, slug")
     .single()
 
   if (error || !data) return { error: "Something went wrong saving your recipe. Try again." }
+
+  const photo = formData.get("photo") as File | null
+  if (photo && photo.size > 0) {
+    const adminClient = createAdminClient()
+    const buffer = Buffer.from(await photo.arrayBuffer())
+    const { error: uploadError } = await adminClient.storage
+      .from("recipe-photos")
+      .upload(data.id, buffer, { contentType: photo.type, upsert: true })
+    if (!uploadError) {
+      const { data: { publicUrl } } = adminClient.storage
+        .from("recipe-photos")
+        .getPublicUrl(data.id)
+      await supabase.from("recipes").update({ photo_url: publicUrl }).eq("id", data.id)
+    }
+  }
 
   revalidatePath("/recipes")
   redirect(`/recipes/${data.slug}`)
@@ -155,6 +171,22 @@ export async function updateRecipe(
   const slugBase = slugify(parsed.name)
   const slug = slugBase === currentSlug ? currentSlug : await uniqueSlug(supabase, slugBase, recipeId)
 
+  const photo = formData.get("photo") as File | null
+  let photoUrl: string | undefined = undefined
+  if (photo && photo.size > 0) {
+    const adminClient = createAdminClient()
+    const buffer = Buffer.from(await photo.arrayBuffer())
+    const { error: uploadError } = await adminClient.storage
+      .from("recipe-photos")
+      .upload(recipeId, buffer, { contentType: photo.type, upsert: true })
+    if (!uploadError) {
+      const { data: { publicUrl } } = adminClient.storage
+        .from("recipe-photos")
+        .getPublicUrl(recipeId)
+      photoUrl = publicUrl
+    }
+  }
+
   const { data, error } = await supabase
     .from("recipes")
     .update({
@@ -166,6 +198,7 @@ export async function updateRecipe(
       tags: parsed.tags,
       ingredients: parsed.ingredients,
       steps: parsed.steps,
+      ...(photoUrl !== undefined ? { photo_url: photoUrl } : {}),
     })
     .eq("id", recipeId)
     .eq("created_by", user.id)
@@ -192,6 +225,9 @@ export async function deleteRecipe(formData: FormData) {
   if (!user) return
 
   await supabase.from("recipes").delete().eq("id", recipeId).eq("created_by", user.id)
+
+  const adminClient = createAdminClient()
+  await adminClient.storage.from("recipe-photos").remove([recipeId])
 
   revalidatePath("/recipes")
   redirect("/recipes")
