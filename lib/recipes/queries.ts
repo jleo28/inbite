@@ -13,6 +13,7 @@ export interface Recipe {
   ingredients: { amount: string; item: string }[]
   steps: string[]
   imageGradient: string
+  photoUrl: string | null
   ownerId: string | null
 }
 
@@ -27,6 +28,7 @@ function toRecipe(row: Tables<"recipes">): Recipe {
     ingredients: row.ingredients as Recipe["ingredients"],
     steps: row.steps,
     imageGradient: row.image_gradient,
+    photoUrl: row.photo_url,
     ownerId: row.created_by,
   }
 }

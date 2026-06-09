@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { useActionState, useState } from "react"
 import { RECIPE_GRADIENTS } from "@/lib/recipes/constants"
 import type { RecipeFormState } from "@/lib/recipes/actions"
@@ -12,6 +13,7 @@ interface RecipeFormValues {
   ingredients: { amount: string; item: string }[]
   steps: string[]
   imageGradient: string
+  photoUrl?: string | null
 }
 
 interface RecipeFormProps {
@@ -119,7 +121,24 @@ export default function RecipeForm({
             </label>
           ))}
         </div>
+        <p className="font-sans text-xs text-muted">Used as fallback if no photo is uploaded.</p>
       </fieldset>
+
+      <label className={labelClass}>
+        Photo
+        {initialValues?.photoUrl ? (
+          <div className="relative h-32 w-48 overflow-hidden rounded-lg">
+            <Image src={initialValues.photoUrl} alt="Current photo" fill className="object-cover" />
+          </div>
+        ) : null}
+        <input
+          type="file"
+          name="photo"
+          accept="image/*"
+          className="rounded-lg border border-stone bg-cream px-4 py-3 font-sans text-sm text-espresso file:mr-4 file:rounded-full file:border-0 file:bg-stone/60 file:px-3 file:py-1 file:font-sans file:text-xs file:text-espresso"
+        />
+        <span className="font-sans text-xs text-muted">Optional. Replaces the cover style on the recipe card.</span>
+      </label>
 
       <fieldset className="flex flex-col gap-3">
         <legend className="font-sans text-sm text-espresso">Ingredients</legend>

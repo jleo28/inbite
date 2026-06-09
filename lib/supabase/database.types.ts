@@ -205,6 +205,7 @@ export type Database = {
           image_gradient: string
           ingredients: Json
           name: string
+          photo_url: string | null
           servings: number
           slug: string
           steps: string[]
@@ -218,6 +219,7 @@ export type Database = {
           image_gradient: string
           ingredients?: Json
           name: string
+          photo_url?: string | null
           servings: number
           slug: string
           steps?: string[]
@@ -231,6 +233,7 @@ export type Database = {
           image_gradient?: string
           ingredients?: Json
           name?: string
+          photo_url?: string | null
           servings?: number
           slug?: string
           steps?: string[]

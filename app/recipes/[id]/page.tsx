@@ -1,3 +1,4 @@
+import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import FadeIn from "@/components/FadeIn"
@@ -29,7 +30,13 @@ export default async function RecipeDetailPage({ params }: RecipeDetailPageProps
 
   return (
     <main className="flex-1">
-      <div className={`grain-overlay h-72 w-full bg-gradient-to-br ${recipe.imageGradient} sm:h-96`} />
+      {recipe.photoUrl ? (
+        <div className="relative h-72 w-full overflow-hidden sm:h-96">
+          <Image src={recipe.photoUrl} alt={recipe.name} fill className="object-cover" />
+        </div>
+      ) : (
+        <div className={`grain-overlay h-72 w-full bg-gradient-to-br ${recipe.imageGradient} sm:h-96`} />
+      )}
 
       <div className="mx-auto w-full max-w-3xl px-6 py-16">
         <FadeIn>

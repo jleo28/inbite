@@ -48,6 +48,7 @@ export default async function EditRecipePage({ params }: EditRecipePageProps) {
             ingredients: recipe.ingredients,
             steps: recipe.steps,
             imageGradient: recipe.imageGradient,
+            photoUrl: recipe.photoUrl,
           }}
         />
       </FadeIn>
