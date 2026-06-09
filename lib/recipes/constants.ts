@@ -1,8 +1,8 @@
 export const RECIPE_GRADIENTS = [
-  "from-terracotta/70 via-terracotta/40 to-stone",
-  "from-sage/60 via-stone to-cream",
-  "from-terracotta/50 via-sage/30 to-cream",
-  "from-espresso/40 via-stone to-sage/30",
-  "from-terracotta/60 via-terracotta/30 to-cream",
-  "from-terracotta/40 via-stone to-espresso/20",
+  "linear-gradient(to bottom right, rgba(201,106,58,0.7), rgba(201,106,58,0.4), #E8E2D9)",
+  "linear-gradient(to bottom right, rgba(138,158,132,0.6), #E8E2D9, #F9F5EF)",
+  "linear-gradient(to bottom right, rgba(201,106,58,0.5), rgba(138,158,132,0.3), #F9F5EF)",
+  "linear-gradient(to bottom right, rgba(28,22,18,0.4), #E8E2D9, rgba(138,158,132,0.3))",
+  "linear-gradient(to bottom right, rgba(201,106,58,0.6), rgba(201,106,58,0.3), #F9F5EF)",
+  "linear-gradient(to bottom right, rgba(201,106,58,0.4), #E8E2D9, rgba(28,22,18,0.2))",
 ] as const

@@ -113,7 +113,8 @@ export default function RecipeForm({
                 className="peer sr-only"
               />
               <span
-                className={`block h-12 w-12 rounded-full bg-gradient-to-br ${gradient} ring-2 ring-transparent ring-offset-2 ring-offset-cream transition-all peer-checked:ring-terracotta`}
+                className="block h-12 w-12 rounded-full ring-2 ring-transparent ring-offset-2 ring-offset-cream transition-all peer-checked:ring-terracotta"
+                style={{ backgroundImage: gradient }}
               />
             </label>
           ))}

@@ -16,7 +16,7 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
       href={`/recipes/${recipe.id}`}
       className="group block overflow-hidden rounded-2xl border border-stone bg-cream transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-espresso/10"
     >
-      <div className={`h-44 w-full bg-gradient-to-br ${recipe.imageGradient}`} />
+      <div className="h-44 w-full" style={{ backgroundImage: recipe.imageGradient }} />
       <div className="flex flex-col gap-3 p-6">
         <h3 className="font-display text-xl text-espresso">{recipe.name}</h3>
         <div className="flex flex-wrap gap-2">
