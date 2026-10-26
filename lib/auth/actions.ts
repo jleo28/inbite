@@ -60,3 +60,21 @@ export async function logout() {
   revalidatePath("/", "layout")
   redirect("/login")
 }
+
+// One-click demo access for recruiters: signs in to the shared guest account
+// using a server-generated magic-link token, so no password ever exists.
+export async function signInAsGuest() {
+  let failed = false
+  try {
+    const { createGuestToken } = await import("@/lib/demo/guest")
+    const token_hash = await createGuestToken()
+    const supabase = await createClient()
+    const { error } = await supabase.auth.verifyOtp({ type: "magiclink", token_hash })
+    if (error) throw error
+  } catch (err) {
+    console.error("[guest] sign-in failed", err)
+    failed = true
+  }
+  revalidatePath("/", "layout")
+  redirect(failed ? "/login?error=guest" : "/events")
+}

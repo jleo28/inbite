@@ -2,9 +2,10 @@ interface HeroSectionProps {
   eyebrow?: string
   headline: string
   subhead: string
+  children?: React.ReactNode
 }
 
-export default function HeroSection({ eyebrow, headline, subhead }: HeroSectionProps) {
+export default function HeroSection({ eyebrow, headline, subhead, children }: HeroSectionProps) {
   return (
     <section className="grain-overlay relative overflow-hidden bg-gradient-to-b from-terracotta/15 via-stone/40 to-cream px-6 py-28">
       <div className="relative z-10 mx-auto max-w-3xl text-center">
@@ -17,6 +18,7 @@ export default function HeroSection({ eyebrow, headline, subhead }: HeroSectionP
           {headline}
         </h1>
         <p className="mx-auto mt-6 max-w-xl font-sans text-lg text-muted">{subhead}</p>
+        {children ? <div className="mt-8 flex flex-wrap justify-center gap-3">{children}</div> : null}
       </div>
     </section>
   )

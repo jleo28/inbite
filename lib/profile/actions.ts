@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache"
 import { createClient } from "@/lib/supabase/server"
+import { isGuestEmail } from "@/lib/demo/guest"
 
 function initialsFromName(name: string) {
   const parts = name.trim().split(/\s+/).filter(Boolean)
@@ -43,6 +44,10 @@ export async function changePassword(prevState: unknown, formData: FormData) {
   if (newPassword !== confirmPassword) return { error: "Passwords don't match." }
 
   const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (isGuestEmail(user?.email)) return { error: "The guest demo account can't set a password." }
   const { error } = await supabase.auth.updateUser({ password: newPassword })
 
   if (error) return { error: error.message }

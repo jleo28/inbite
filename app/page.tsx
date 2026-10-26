@@ -1,5 +1,6 @@
 import Link from "next/link"
 import HeroSection from "@/components/HeroSection"
+import GuestButton from "@/components/auth/GuestButton"
 import RecipeCard from "@/components/RecipeCard"
 import FadeIn from "@/components/FadeIn"
 import InvitationCard from "@/components/home/InvitationCard"
@@ -38,7 +39,14 @@ export default async function Home() {
         eyebrow="Your week, planned"
         headline="Meals worth gathering for"
         subhead="Plan recipes, build out meals, and invite the people who matter, all in one warm and simple place."
-      />
+      >
+        {user ? null : (
+          <GuestButton
+            className="rounded-full bg-terracotta px-6 py-3 font-sans text-sm font-medium text-cream transition-colors hover:bg-terracotta/90 disabled:opacity-60"
+            label="Try as guest, no account needed"
+          />
+        )}
+      </HeroSection>
 
       <section className="mx-auto w-full max-w-6xl px-6 py-20">
         <FadeIn>

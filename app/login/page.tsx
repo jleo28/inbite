@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useActionState } from "react"
 import FadeIn from "@/components/FadeIn"
 import { login } from "@/lib/auth/actions"
+import GuestButton from "@/components/auth/GuestButton"
 
 export default function LoginPage() {
   const [state, formAction, pending] = useActionState(login, undefined)
@@ -54,6 +55,15 @@ export default function LoginPage() {
               {pending ? "Signing in…" : "Sign in"}
             </button>
           </form>
+        </FadeIn>
+
+        <FadeIn delay={120}>
+          <div className="mt-4">
+            <GuestButton
+              className="w-full rounded-full border border-terracotta px-6 py-3 font-sans text-sm font-medium text-terracotta transition-colors hover:bg-terracotta/10 disabled:opacity-60"
+              label="Just looking? Try as guest"
+            />
+          </div>
         </FadeIn>
 
         <FadeIn delay={150}>
